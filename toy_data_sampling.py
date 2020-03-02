@@ -68,17 +68,24 @@ with h5py.File("all_datasets.hdf5","r") as f:
     for i in range(len(dsList)):   
         tr_x = ""                                                                                                                                                               
         tr_y = ""                                                                                                                                                               
-        te_x = ""                                                                                                                                                               
-        te_y = ""                                                                                                                                                               
+                                                                                                                                                                      
         tr_x = tr_x + str(dsList[i]) + "/X"                                                                                                                                     
         tr_y = tr_y + str(dsList[i]) + "/y"                                                                                                                                     
-        te_x = te_x + str(dsList[i]) + "/Xt"                                                                                                                                    
-        te_y = te_y + str(dsList[i]) + "/yt"                                                                                                                                   
-        #print(tr_x)                                                                                                                                                            
-        Xtrain = np.array(f[ tr_x])                                                                                                                                            
-        ytrain = np.squeeze(np.array(f[tr_y]))                                                                                                                                 
-        Xtest = np.array(f[te_x])                                                                                                                                              
-        ytest = np.squeeze(np.array(f[te_y]))                                                                                                                                  
+                                                                                                                                                                  
+        X = np.array(f[ tr_x])                                                                                                                                            
+        y = np.squeeze(np.array(f[tr_y]))                                                                                                                                 
+#         Xtest = np.array(f[te_x])                                                                                                                                              
+#         ytest = np.squeeze(np.array(f[te_y]))      
+        sss = StratifiedShuffleSplit(n_splits=1, test_size=0.1, random_state=0)
+        sss.get_n_splits(X, y)
+        for train_index, test_index in sss.split(X, y):
+            Xtrain, Xtest = X[train_index], X[test_index]
+            ytrain, ytest = y[train_index], y[test_index]
+            
+        print(np.shape(Xtrain))
+        print(np.shape(Xtest))
+        print(np.shape(ytrain))
+        print(np.shape(ytest))
         X_train_datasets_5d_resampled.append(Xtrain)
         y_train_datasets_5d_resampled.append(ytrain)
         X_test_datasets_5d_resampled.append(Xtest)
